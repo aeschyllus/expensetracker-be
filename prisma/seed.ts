@@ -32,5 +32,5 @@ async function main() {
     ],
   });
 
-  console.log({ user, categories, subcategories });
+  console.log({ user, accounts, categories, subcategories });
 }
