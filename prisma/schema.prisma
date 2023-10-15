@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int           @id @default(autoincrement())
+  username      String
+  email         String
+  password      String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  accounts      Account[]
+  categories    Category[]
+  subcategories Subcategory[]
+}
+
+model Account {
+  id               Int           @id @default(autoincrement())
+  name             String
+  amount           Float
+  description      String?
+  userId           Int
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  fromTransactions Transaction[] @relation("Transaction_fromAccountId")
+  toTransactions   Transaction[] @relation("Transaction_toAccountId")
+  User             User          @relation(fields: [userId], references: [id])
+}
+
+model Category {
+  id            Int           @id @default(autoincrement())
+  name          String
+  userId        Int
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  transactions  Transaction[]
+  subcategories Subcategory[]
+  User          User          @relation(fields: [userId], references: [id])
+}
+
+model Subcategory {
+  id           Int           @id @default(autoincrement())
+  name         String
+  categoryId   Int
+  userId       Int
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  transactions Transaction[]
+  Category     Category      @relation(fields: [categoryId], references: [id])
+  User         User          @relation(fields: [userId], references: [id])
+}
+
+model Transaction {
+  id            Int             @id @default(autoincrement())
+  type          TransactionType @default(EXPENSE)
+  fromAccountId Int
+  toAccountId   Int?
+  categoryId    Int
+  subcategoryId Int?
+  amount        Int
+  note          String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  from          Account         @relation("Transaction_fromAccountId", fields: [fromAccountId], references: [id])
+  to            Account?        @relation("Transaction_toAccountId", fields: [toAccountId], references: [id])
+  category      Category        @relation(fields: [categoryId], references: [id])
+  subcategory   Subcategory?    @relation(fields: [subcategoryId], references: [id])
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+  TRANSFER
+}
