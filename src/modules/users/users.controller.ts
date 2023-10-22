@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
@@ -19,7 +20,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities';
-import { PrismaExceptionEntity } from 'src/filters/prisma-exception/entities';
+import { PrismaExceptionEntity } from '../../filters/prisma-exception/entities';
 
 @Controller('users')
 @ApiTags('users')
@@ -29,6 +30,7 @@ export class UsersController {
   @Post()
   @ApiCreatedResponse({ type: UserEntity })
   @ApiConflictResponse({ type: PrismaExceptionEntity })
+  @ApiBadRequestResponse()
   async create(@Body() createUserDto: CreateUserDto) {
     return new UserEntity(await this.usersService.create(createUserDto));
   }
@@ -51,6 +53,7 @@ export class UsersController {
   @ApiOkResponse({ type: UserEntity })
   @ApiConflictResponse({ type: PrismaExceptionEntity })
   @ApiNotFoundResponse({ type: PrismaExceptionEntity })
+  @ApiBadRequestResponse()
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
