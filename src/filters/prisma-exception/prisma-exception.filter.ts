@@ -21,17 +21,23 @@ export class PrismaExceptionFilter extends BaseExceptionFilter {
   };
 
   catch(exception: PrismaClientKnownRequestError, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse();
+
     const statusCode = this.errorCodesStatus[exception.code];
     const message = `[${exception.code}]: ${this.exceptionShortMessage(
       exception.message,
     )}`;
 
-    // Default 500 error code
+    // For unhandled Prisma errors
     if (!Object.keys(this.errorCodesStatus).includes(exception.code)) {
-      return super.catch(exception, host);
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Internal server error',
+      });
     }
 
-    super.catch(new HttpException({ statusCode, message }, statusCode), host);
+    response.status(statusCode).json({ statusCode, message });
   }
 
   private exceptionShortMessage(message: string) {
