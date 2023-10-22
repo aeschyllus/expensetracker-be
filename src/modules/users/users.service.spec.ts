@@ -72,7 +72,6 @@ describe('UsersService', () => {
       await expect(result).rejects.toThrowError(ConflictException);
     });
 
-    // TODO: Document in Swagger
     it('should throw BadRequestException for invalid inputs', async () => {
       jest
         .spyOn(prisma.user, 'create')
@@ -113,7 +112,7 @@ describe('UsersService', () => {
 
   describe('update', () => {
     it('should update a user', async () => {
-      const user = await service.update(1, { username: 'mlapada' });
+      const user = await service.update(1, { password: 'mlapada' });
       expect(user).toEqual(oneUser);
     });
 
@@ -137,7 +136,6 @@ describe('UsersService', () => {
       await expect(result).rejects.toThrowError(ConflictException);
     });
 
-    // TODO: Document in Swagger
     it('should throw BadRequestException for invalid inputs', async () => {
       jest
         .spyOn(prisma.user, 'update')
