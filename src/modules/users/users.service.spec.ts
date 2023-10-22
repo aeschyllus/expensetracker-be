@@ -100,7 +100,6 @@ describe('UsersService', () => {
       await expect(service.findOne(1)).resolves.toEqual(oneUser);
     });
 
-    // TODO: Document in Swagger
     it('should throw NotFoundException for non-existing user', async () => {
       jest
         .spyOn(prisma.user, 'findUniqueOrThrow')
