@@ -17,8 +17,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto, UpdateUserDto } from './dto';
 import { UserEntity } from './entities';
 import { PrismaExceptionEntity } from '../../filters/prisma-exception/entities';
 
