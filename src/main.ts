@@ -14,6 +14,7 @@ async function bootstrap() {
     .setTitle('Xpense')
     .setDescription('Xpense API documentation')
     .setVersion('0.1.0')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
