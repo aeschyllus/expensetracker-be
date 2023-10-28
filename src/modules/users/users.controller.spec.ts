@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { hashSync } from 'bcrypt';
@@ -88,6 +89,16 @@ describe('UsersController', () => {
       const users = await controller.findAll();
       expect(users).toEqual(usersArray);
     });
+
+    it('should throw UnauthorizedException', async () => {
+      jest
+        .spyOn(controller, 'findAll')
+        .mockRejectedValue(new UnauthorizedException());
+
+      await expect(controller.findAll()).rejects.toThrowError(
+        UnauthorizedException,
+      );
+    });
   });
 
   describe('findOne', () => {
@@ -101,6 +112,16 @@ describe('UsersController', () => {
       const result = controller.findOne(2); // non-existing ID
 
       await expect(result).rejects.toThrowError(NotFoundException);
+    });
+
+    it('should throw UnauthorizedException', async () => {
+      jest
+        .spyOn(controller, 'findOne')
+        .mockRejectedValue(new UnauthorizedException());
+
+      await expect(controller.findOne(1)).rejects.toThrowError(
+        UnauthorizedException,
+      );
     });
   });
 
@@ -137,6 +158,16 @@ describe('UsersController', () => {
 
       await expect(result).rejects.toThrowError(BadRequestException);
     });
+
+    it('should throw UnauthorizedException', async () => {
+      jest
+        .spyOn(controller, 'update')
+        .mockRejectedValue(new UnauthorizedException());
+
+      await expect(
+        controller.update(1, { username: 'test' }),
+      ).rejects.toThrowError(UnauthorizedException);
+    });
   });
 
   describe('remove', () => {
@@ -150,6 +181,16 @@ describe('UsersController', () => {
       const result = service.remove(2); // non-existing ID
 
       await expect(result).rejects.toThrowError(NotFoundException);
+    });
+
+    it('should throw UnauthorizedException', async () => {
+      jest
+        .spyOn(controller, 'remove')
+        .mockRejectedValue(new UnauthorizedException());
+
+      await expect(controller.remove(1)).rejects.toThrowError(
+        UnauthorizedException,
+      );
     });
   });
 });
