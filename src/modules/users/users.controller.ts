@@ -7,19 +7,23 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto } from './dto';
 import { UserEntity } from './entities';
 import { PrismaExceptionEntity } from '../../filters/prisma-exception/entities';
+import { JwtAuthGuard } from '../../guards';
 
 @Controller('users')
 @ApiTags('users')
@@ -35,24 +39,33 @@ export class UsersController {
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOkResponse({ type: UserEntity })
+  @ApiUnauthorizedResponse({ type: PrismaExceptionEntity })
   async findAll() {
     const users = await this.usersService.findAll();
     return users.map((user) => new UserEntity(user));
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOkResponse({ type: UserEntity })
   @ApiNotFoundResponse({ type: PrismaExceptionEntity })
+  @ApiUnauthorizedResponse({ type: PrismaExceptionEntity })
   async findOne(@Param('id', ParseIntPipe) id: number) {
     return new UserEntity(await this.usersService.findOne(id));
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOkResponse({ type: UserEntity })
   @ApiConflictResponse({ type: PrismaExceptionEntity })
   @ApiNotFoundResponse({ type: PrismaExceptionEntity })
   @ApiBadRequestResponse()
+  @ApiUnauthorizedResponse({ type: PrismaExceptionEntity })
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
@@ -61,8 +74,11 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOkResponse({ type: UserEntity })
   @ApiNotFoundResponse({ type: PrismaExceptionEntity })
+  @ApiUnauthorizedResponse({ type: PrismaExceptionEntity })
   async remove(@Param('id', ParseIntPipe) id: number) {
     return new UserEntity(await this.usersService.remove(id));
   }
